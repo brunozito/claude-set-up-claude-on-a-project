@@ -1,8 +1,21 @@
 # Note sulla configurazione di Claude Code
 
-## Versione di Node (CLAUDE.md)
+## Cosa copre `CLAUDE.md`
 
-La nota diceva "Node 18+", ma `node --watch` e `--test-name-pattern` sono arrivati in Node 18.11, quindi ora dice "18.11+". La versione consigliata resta la 22, quella usata dalla CI. Test e lint passano anche su Node 26.
+`CLAUDE.md` viene caricato in ogni sessione, quindi contiene solo ciò che serve quasi sempre:
+
+- una riga di descrizione del progetto;
+- i comandi principali: `npm run dev`, `npm test`, `npm run lint`;
+- le convenzioni del codice (CommonJS, stile dei test, accesso ai dati solo tramite `db/store.js`, formato degli errori, virgolette doppie e commento sopra ogni route);
+- una breve panoramica dell'architettura (`server.js`, `routes/`, `db/store.js`).
+
+**Lasciato fuori di proposito:**
+
+- **La storia delle versioni di Node** (18.11+, 22 in CI, verificato su 26): la versione usata dalla CI è già in `.github/workflows/ci.yml` e non cambia il modo in cui Claude scrive il codice. Tenerla nel file la ripeterebbe in ogni sessione senza beneficio.
+- **I comandi per filtrare i test** (`node --test <file>`, `--test-name-pattern`): sono opzioni standard di Node che Claude conosce già; elencarle allunga il file senza aggiungere informazioni specifiche del progetto.
+- **Le note specifiche di implementazione** (il controllo `require.main === module` in `server.js`, la conversione di `req.params.id` con `Number()`, lo store condiviso tra i test): si ricavano leggendo il codice, che resta la fonte aggiornata. Se cambiassero, una copia in `CLAUDE.md` diventerebbe sbagliata.
+
+In generale: un `CLAUDE.md` corto viene seguito meglio, perché le istruzioni importanti non si perdono tra i dettagli.
 
 ## Permessi (`.claude/settings.json`)
 
@@ -23,3 +36,8 @@ Il file è condiviso nel repo, quindi le regole valgono per chiunque usi Claude 
 ## Limiti
 
 Le regole su Bash confrontano il prefisso del comando. Varianti come `rm -fr` o `rm -r -f` non coincidono con `rm -rf` e quindi non vengono bloccate: per quelle Claude Code chiede comunque conferma, perché non sono nella lista `allow`. Anche la regola `Read(./.env)` blocca solo lo strumento Read, non un `cat .env` lanciato da Bash, che però richiede a sua volta una conferma.
+
+## Verifica
+
+- `/memory` ha mostrato il `CLAUDE.md` del progetto tra i file di memoria caricati.
+- `/permissions` ha mostrato le regole `allow` e `deny` definite in `.claude/settings.json`.
